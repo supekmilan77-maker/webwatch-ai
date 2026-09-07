@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import Dashboard from './components/Dashboard'
 import Pricing from './components/Pricing'
 import Footer from './components/Footer'
+import { supabase } from './supabase'
 
 function App() {
   const [websites, setWebsites] = useState([
@@ -37,24 +38,52 @@ function App() {
   ])
 
   const [loading, setLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   const addWebsite = async (url) => {
     setLoading(true)
-    // Simulácia 3-sekundového skennovania
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    setSuccessMessage('')
 
-    const newWebsite = {
-      id: websites.length + 1,
-      url: url,
-      name: url.replace('https://', '').replace('http://', '').split('/')[0],
-      status: 'ONLINE',
-      uptime: (Math.random() * 0.08 + 99.9).toFixed(2),
-      responseTime: Math.floor(Math.random() * 200 + 100),
-      ssl: { status: 'Platný', daysLeft: Math.floor(Math.random() * 200 + 30) },
+    try {
+      // Simulácia 3-sekundového skennovania
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+
+      // Zápis do Supabase
+      const { data, error } = await supabase.from('websites').insert([
+        {
+          url: url,
+          status: 'online',
+          user_email: 'user@example.com',
+        },
+      ])
+
+      if (error) {
+        console.error('Chyba pri zápise do databázy:', error)
+        setLoading(false)
+        return
+      }
+
+      // Lokálne pridanie do stavu
+      const newWebsite = {
+        id: websites.length + 1,
+        url: url,
+        name: url.replace('https://', '').replace('http://', '').split('/')[0],
+        status: 'ONLINE',
+        uptime: (Math.random() * 0.08 + 99.9).toFixed(2),
+        responseTime: Math.floor(Math.random() * 200 + 100),
+        ssl: { status: 'Platný', daysLeft: Math.floor(Math.random() * 200 + 30) },
+      }
+
+      setWebsites([...websites, newWebsite])
+      setSuccessMessage('Web bol úspešne pridaný do monitoringu!')
+
+      // Skry správu po 3 sekundách
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } catch (err) {
+      console.error('Neočakávaná chyba:', err)
+    } finally {
+      setLoading(false)
     }
-
-    setWebsites([...websites, newWebsite])
-    setLoading(false)
   }
 
   const getMetrics = () => {
@@ -74,7 +103,12 @@ function App() {
       <Header />
       <main>
         <Hero metrics={getMetrics()} />
-        <Dashboard websites={websites} onAddWebsite={addWebsite} loading={loading} />
+        <Dashboard
+          websites={websites}
+          onAddWebsite={addWebsite}
+          loading={loading}
+          successMessage={successMessage}
+        />
         <Pricing />
       </main>
       <Footer />
