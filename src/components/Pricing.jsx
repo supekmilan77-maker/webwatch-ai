@@ -8,6 +8,7 @@ const Pricing = () => {
       currency: '€',
       period: '/mesiac',
       description: 'Perfektné pre startups a SME',
+      stripeUrl: 'https://buy.stripe.com/test_28EbJ2bXl0Kh2qY3n43wQ00',
       features: [
         'Monitorovanie až 5 webov',
         'Kontroly každých 5 minút',
@@ -23,6 +24,7 @@ const Pricing = () => {
       currency: '€',
       period: '/mesiac',
       description: 'Pre rastúce podniky',
+      stripeUrl: 'https://buy.stripe.com/test_14A00ke5t2Sp8Pm4r83wQ01',
       features: [
         'Monitorovanie až 50 webov',
         'Kontroly každú minútu',
@@ -40,6 +42,7 @@ const Pricing = () => {
       currency: '€',
       period: 'jednorazovo',
       description: 'Permanentný prístup',
+      stripeUrl: 'https://buy.stripe.com/test_6oU28s8L91Ol5Dae1I3wQ02',
       features: [
         'Monitorovanie neobmedzených webov',
         'Kontroly každých 30 sekúnd',
@@ -99,15 +102,18 @@ const Pricing = () => {
               </div>
 
               {/* CTA Button */}
-              <button
-                className={`w-full rounded-lg px-6 py-3 font-semibold transition-smooth mb-8 ${
+              <a
+                href={plan.stripeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`block w-full rounded-lg px-6 py-3 font-semibold transition-smooth mb-8 text-center ${
                   plan.highlight
                     ? 'bg-brand-green text-white hover:bg-green-600'
                     : 'bg-brand-green/20 text-brand-green hover:bg-brand-green/30'
                 }`}
               >
                 Vyskúšať na 14 dní zdarma
-              </button>
+              </a>
 
               {/* Features list */}
               <div className="space-y-4">
